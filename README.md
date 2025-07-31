@@ -1,1 +1,0 @@
-# pix-payment-lambda
