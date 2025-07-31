@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    // Define a versão do JavaScript gerada (Node 18+ suporta ES2020)
+    "target": "ES2020",
+
+    // Define o sistema de módulos (CommonJS é padrão para Node.js / AWS Lambda)
+    "module": "commonjs",
+
+    // Resolve módulos estilo Node.js (permite importações simples)
+    "moduleResolution": "node",
+
+    // Facilita importações de módulos CommonJS com sintaxe ES Modules
+    "esModuleInterop": true,
+
+    // Pasta onde o código compilado será gerado
+    "outDir": "./dist",
+
+    // Ativa verificações rígidas de tipos para código mais seguro e robusto
+    "strict": true,
+
+    // Gera arquivos source map para ajudar no debugging do código TypeScript original
+    "sourceMap": true,
+
+    // Ignora checagem de tipos de bibliotecas externas para acelerar a compilação
+    "skipLibCheck": true,
+
+    // Inclui bibliotecas padrão do ES2020 (ex: Promise, Map, etc)
+    "lib": ["ES2020"],
+
+    // Garante que nomes de arquivos importados respeitem maiúsculas e minúsculas, evitando bugs cross-OS
+    "forceConsistentCasingInFileNames": true
+  },
+
+  // Define quais arquivos serão incluídos na compilação (todos .ts no projeto)
+  "include": ["./**/*.ts"],
+
+  // Exclui pastas da compilação para evitar conflitos e acelerar build
+  "exclude": ["node_modules", "dist"]
+}

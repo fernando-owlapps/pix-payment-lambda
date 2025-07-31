@@ -1,0 +1,12 @@
+{
+  "pix": [
+    {
+      "endToEndId": "E1234567890123456789",
+      "txid": "txid123",
+      "valor": "20.00",
+      "chave": "seu-email@provedor.com",
+      "horario": "2025-07-31T14:59:00Z",
+      "infoPagador": "pagamento do pedido"
+    }
+  ]
+}
