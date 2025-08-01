@@ -23,7 +23,7 @@ const config: AWS = {
 
   functions: {
     gerarPagamento: {
-      handler: 'src/handler.gerarPagamento',
+      handler: 'src/handlers/gerarPagamento.gerarPagamento',
       events: [
         {
           http: {
@@ -35,7 +35,7 @@ const config: AWS = {
       ],
     },
     webhookPix: {
-      handler: 'src/handler.webhookPix',
+      handler: 'src/handlers/webhookPix.webhookPix',
       events: [
         {
           http: {
