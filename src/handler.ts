@@ -3,9 +3,9 @@ import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { PixProvider, Devedor } from '../utils/pixProvider';
+import { PixProvider, Devedor } from './utils/pixProvider';
 // import { GerencianetProvider } from '../providers/gerencianet/gerencianetProvider';
-import { MercadoPagoProvider } from '../providers/mercadopago/mercadoPagoProvider';
+import { MercadoPagoProvider } from './providers/mercadopago/mercadoPagoProvider';
 
 // Configure facilmente o provedor desejado aqui
 // const pixProvider: PixProvider = new GerencianetProvider();

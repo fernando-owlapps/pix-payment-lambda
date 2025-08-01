@@ -1,110 +1,113 @@
-import axios from 'axios';
-import fs from 'fs';
-import https from 'https';
-import { PixProvider, Devedor, CobrancaPixResult } from '../../utils/pixProvider';
-import { getOAuthTokenDynamoDB } from '../../old/auth';
+// import axios from 'axios';
+// import fs from 'fs';
+// import https from 'https';
+// import { PixProvider, Devedor, CobrancaPixResult } from '../../utils/pixProvider';
+// import { getOAuthTokenDynamoDB } from '../../old/auth';
 
-export class GerencianetProvider implements PixProvider {
-  private agent = new https.Agent({
-    cert: fs.readFileSync(process.env.CERT_PATH!),
-    key: fs.readFileSync(process.env.KEY_PATH!),
-  });
+// import dotenv from 'dotenv';
+// dotenv.config();
 
-  private chavePix = process.env.CHAVE_PIX || 'seu-email@provedor.com';
+// export class GerencianetProvider implements PixProvider {
+//   private agent = new https.Agent({
+//     cert: fs.readFileSync(process.env.CERT_PATH!),
+//     key: fs.readFileSync(process.env.KEY_PATH!),
+//   });
 
-  private readonly TIMEOUT_MS = 5 * 60 * 1000; // 5 minutos
-  private readonly POLLING_INTERVAL_MS = 5000; // 5 segundos
+//   private chavePix = process.env.CHAVE_PIX || 'seu-email@provedor.com';
 
-  async criarCobranca(txid: string, valor: string, devedor: Devedor): Promise<CobrancaPixResult> {
-    const token = await getOAuthTokenDynamoDB();
+//   private readonly TIMEOUT_MS = 5 * 60 * 1000; // 5 minutos
+//   private readonly POLLING_INTERVAL_MS = 5000; // 5 segundos
 
-    const body = {
-      calendario: { expiracao: 300 }, // expiração em 5 minutos
-      devedor,
-      valor: { original: valor },
-      chave: this.chavePix,
-      solicitacaoPagador: 'Por favor, pague antes de 5 minutos para evitar cancelamento.',
-    };
+//   async criarCobranca(txid: string, valor: string, devedor: Devedor): Promise<CobrancaPixResult> {
+//     const token = await getOAuthTokenDynamoDB();
 
-    const res = await axios.put(`https://api-pix.gerencianet.com.br/v2/cob/${txid}`, body, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      httpsAgent: this.agent,
-    });
+//     const body = {
+//       calendario: { expiracao: 300 }, // expiração em 5 minutos
+//       devedor,
+//       valor: { original: valor },
+//       chave: this.chavePix,
+//       solicitacaoPagador: 'Por favor, pague antes de 5 minutos para evitar cancelamento.',
+//     };
 
-    if (!res.data.loc || !res.data.loc.id) {
-      throw new Error('Resposta da cobrança não contém loc.id');
-    }
+//     const res = await axios.put(`https://api-pix.gerencianet.com.br/v2/cob/${txid}`, body, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         'Content-Type': 'application/json',
+//       },
+//       httpsAgent: this.agent,
+//     });
 
-    const locId = res.data.loc.id;
+//     if (!res.data.loc || !res.data.loc.id) {
+//       throw new Error('Resposta da cobrança não contém loc.id');
+//     }
 
-    const qrRes = await axios.get(`https://api-pix.gerencianet.com.br/v2/loc/${locId}/qrcode`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      httpsAgent: this.agent,
-    });
+//     const locId = res.data.loc.id;
 
-    return {
-      txid,
-      qrCode: qrRes.data.qrcode,
-      imagemQrcode: qrRes.data.imagemQrcode,
-    };
-  }
+//     const qrRes = await axios.get(`https://api-pix.gerencianet.com.br/v2/loc/${locId}/qrcode`, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//       httpsAgent: this.agent,
+//     });
 
-  async monitorarPagamento(txid: string): Promise<boolean> {
-    const token = await getOAuthTokenDynamoDB();
-    const start = Date.now();
+//     return {
+//       txid,
+//       qrCode: qrRes.data.qrcode,
+//       imagemQrcode: qrRes.data.imagemQrcode,
+//     };
+//   }
 
-    while (Date.now() - start < this.TIMEOUT_MS) {
-      try {
-        const res = await axios.get(`https://api-pix.gerencianet.com.br/v2/cob/${txid}`, {
-          headers: { Authorization: `Bearer ${token}` },
-          httpsAgent: this.agent,
-        });
+//   async monitorarPagamento(txid: string): Promise<boolean> {
+//     const token = await getOAuthTokenDynamoDB();
+//     const start = Date.now();
 
-        const status = res.data.status;
-        console.log(`🔄 Status do pagamento [${txid}]: ${status}`);
+//     while (Date.now() - start < this.TIMEOUT_MS) {
+//       try {
+//         const res = await axios.get(`https://api-pix.gerencianet.com.br/v2/cob/${txid}`, {
+//           headers: { Authorization: `Bearer ${token}` },
+//           httpsAgent: this.agent,
+//         });
 
-        if (status === 'CONCLUIDA') return true;
-      } catch (error: any) {
-        console.warn(
-          '⚠️ Erro ao monitorar pagamento:',
-          error.response?.data || error.message || JSON.stringify(error)
-        );
-      }
+//         const status = res.data.status;
+//         console.log(`🔄 Status do pagamento [${txid}]: ${status}`);
 
-      await new Promise((resolve) => setTimeout(resolve, this.POLLING_INTERVAL_MS));
-    }
+//         if (status === 'CONCLUIDA') return true;
+//       } catch (error: any) {
+//         console.warn(
+//           '⚠️ Erro ao monitorar pagamento:',
+//           error.response?.data || error.message || JSON.stringify(error)
+//         );
+//       }
 
-    return false;
-  }
+//       await new Promise((resolve) => setTimeout(resolve, this.POLLING_INTERVAL_MS));
+//     }
 
-  async registrarWebhook(webhookUrl: string): Promise<void> {
-    const token = await getOAuthTokenDynamoDB();
+//     return false;
+//   }
 
-    try {
-      const res = await axios.put(
-        `https://api-pix.gerencianet.com.br/v2/webhook/${encodeURIComponent(this.chavePix)}`,
-        { webhookUrl },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          httpsAgent: this.agent,
-        }
-      );
+//   async registrarWebhook(webhookUrl: string): Promise<void> {
+//     const token = await getOAuthTokenDynamoDB();
 
-      console.log('✅ Webhook registrado com sucesso:', res.data);
-    } catch (error: any) {
-      console.error(
-        '❌ Falha ao registrar webhook:',
-        error.response?.data || error.message || JSON.stringify(error)
-      );
-      throw error;
-    }
-  }
-}
+//     try {
+//       const res = await axios.put(
+//         `https://api-pix.gerencianet.com.br/v2/webhook/${encodeURIComponent(this.chavePix)}`,
+//         { webhookUrl },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//             'Content-Type': 'application/json',
+//           },
+//           httpsAgent: this.agent,
+//         }
+//       );
+
+//       console.log('✅ Webhook registrado com sucesso:', res.data);
+//     } catch (error: any) {
+//       console.error(
+//         '❌ Falha ao registrar webhook:',
+//         error.response?.data || error.message || JSON.stringify(error)
+//       );
+//       throw error;
+//     }
+//   }
+// }

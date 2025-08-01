@@ -1,14 +1,17 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { GerencianetProvider } from '../src/providers/gerencianet/gerencianetProvider';
+// import { GerencianetProvider } from '../src/providers/gerencianet/gerencianetProvider';
+import { MercadoPagoProvider } from '../src/providers/mercadopago/mercadoPagoProvider';
+
 // Para trocar de provedor, basta importar outro que implemente PixProvider
 // import { OutroProvedorPix } from '../src/providers/outroProvedor';
 
 import { PixProvider } from '../src/utils/pixProvider';
 
 // Instancia o provedor atual (aqui Gerencianet)
-const pixProvider: PixProvider = new GerencianetProvider();
+// const pixProvider: PixProvider = new GerencianetProvider();
+const pixProvider: PixProvider = new MercadoPagoProvider();
 
 async function registrarWebhookPix() {
   // Obtém a URL do webhook a partir do .env

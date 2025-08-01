@@ -17,6 +17,7 @@
     "dotenv": "^17.2.1"
   },
   "devDependencies": {
+    "@serverless/typescript": "^4.17.2",
     "@types/aws-lambda": "^8.10.152",
     "@types/node": "^24.1.0",
     "serverless": "^4.17.2",

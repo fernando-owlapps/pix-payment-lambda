@@ -1,6 +1,9 @@
 // providers/mercadoPagoTokenProvider.ts
 import { OAuthTokenProvider } from "../oauthTokenProvider";
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 export class MercadoPagoTokenProvider implements OAuthTokenProvider {
   private accessToken = process.env.MERCADO_PAGO_ACCESS_TOKEN!;
 

@@ -1,8 +1,15 @@
+// especifico para gerencianet
+// const requiredVars = [
+//   'CLIENT_ID',
+//   'CLIENT_SECRET',
+//   'CERT_PATH',
+//   'KEY_PATH',
+//   'WEBHOOK_URL',
+//   'DYNAMODB_TABLE_NAME',
+//   'AWS_REGION',
+// ];
+
 const requiredVars = [
-  'CLIENT_ID',
-  'CLIENT_SECRET',
-  'CERT_PATH',
-  'KEY_PATH',
   'WEBHOOK_URL',
   'DYNAMODB_TABLE_NAME',
   'AWS_REGION',

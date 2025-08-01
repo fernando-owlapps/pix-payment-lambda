@@ -14,6 +14,7 @@
     "esModuleInterop": true,
 
     // Pasta onde o código compilado será gerado
+    "rootDir": "./src",
     "outDir": "./dist",
 
     // Ativa verificações rígidas de tipos para código mais seguro e robusto

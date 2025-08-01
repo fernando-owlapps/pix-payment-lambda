@@ -1,4 +1,5 @@
 export interface Devedor {
+  email: string
   nome: string;
   cpf: string;
 }
