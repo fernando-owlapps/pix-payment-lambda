@@ -1,21 +1,20 @@
 import axios from 'axios';
-import { PixProvider, Devedor, CobrancaPixResult } from '../../utils/pixProvider';
-
+import { PixProvider, Payer, PixChargeResponse } from 'domain/types/pix.types';
 import dotenv from 'dotenv';
 dotenv.config();
 
 export class MercadoPagoProvider implements PixProvider {
   private accessToken = process.env.MERCADO_PAGO_ACCESS_TOKEN!;
 
-  async criarCobranca(txid: string, valor: string, devedor: Devedor): Promise<CobrancaPixResult> {
+  async create(txid: string, valor: string, payer: Payer): Promise<PixChargeResponse> {
     const body = {
       transaction_amount: Number(valor),
       payment_method_id: 'pix',
       description: 'Pagamento via Pix',
       external_reference: txid,
       payer: {
-        email: devedor?.email || 'TESTUSER958462752@sandbox.mercadopago.com', // e-mail de teste válido para sandbox
-        first_name: devedor?.nome || 'APRO',
+        email: payer?.email, //|| 'TESTUSER958462752@sandbox.mercadopago.com', // e-mail de teste válido para sandbox
+        first_name: payer?.name, // || 'APRO',
       },
     };
 
@@ -29,16 +28,16 @@ export class MercadoPagoProvider implements PixProvider {
 
     const payment = res.data.point_of_interaction.transaction_data;
     const qrCode = payment.qr_code;
-    const imagemQrcode = payment.qr_code_base64;
+    const imageQrcode = payment.qr_code_base64;
 
     return {
       txid,
       qrCode,
-      imagemQrcode,
+      imageQrcode,
     };
   }
 
-  async monitorarPagamento(txid: string): Promise<boolean> {
+  async monitor(txid: string): Promise<boolean> {
     const timeout = 5 * 60 * 1000;
     const start = Date.now();
 
@@ -69,7 +68,7 @@ export class MercadoPagoProvider implements PixProvider {
     return false;
   }
 
-  async registrarWebhook(_url: string): Promise<void> {
+  async registerWebhook(_url: string): Promise<void> {
     console.warn('Webhook para Mercado Pago deve ser registrado manualmente no dashboard.');
   }
 }

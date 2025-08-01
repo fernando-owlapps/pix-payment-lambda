@@ -10,9 +10,9 @@
 // ];
 
 const requiredVars = [
-  'WEBHOOK_URL',
-  'DYNAMODB_TABLE_NAME',
-  'AWS_REGION',
+  'MERCADO_PAGO_ACCESS_TOKEN',
+  'MERCADO_PAGO_PUBLIC_KEY',
+  'PIX_PROVIDER',
 ];
 
 function checkEnv() {

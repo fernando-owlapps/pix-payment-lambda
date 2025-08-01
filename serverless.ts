@@ -16,18 +16,18 @@ const config: AWS = {
     runtime: 'nodejs18.x',
     region: 'us-east-1',
     environment: {
-      WEBHOOK_URL: process.env.WEBHOOK_URL || '',
       MERCADO_PAGO_ACCESS_TOKEN: process.env.MERCADO_PAGO_ACCESS_TOKEN || '',
+      PIX_PROVIDER: process.env.PIX_PROVIDER || '',
     },
   },
 
   functions: {
-    gerarPagamento: {
-      handler: 'src/handlers/gerarPagamento.gerarPagamento',
+    paymentPix: {
+      handler: 'src/handlers/payment/pix/create.handler',
       events: [
         {
           http: {
-            path: 'gerar-pix',
+            path: 'payment/pix',
             method: 'post',
             cors: true,
           },
@@ -35,11 +35,11 @@ const config: AWS = {
       ],
     },
     webhookPix: {
-      handler: 'src/handlers/webhookPix.webhookPix',
+      handler: 'src/handlers/payment/pix/webhook.handler',
       events: [
         {
           http: {
-            path: 'webhook-pix',
+            path: 'payment/pix/webhook',
             method: 'post',
             cors: true,
           },

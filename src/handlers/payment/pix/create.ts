@@ -1,17 +1,9 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
+import { Payer } from 'domain/types/pix.types';
+import { createPixPayment, monitorPixPayment } from 'services/payment/pix.service';
 import { v4 as uuidv4 } from 'uuid';
-import dotenv from 'dotenv';
-dotenv.config();
 
-import { PixProvider, Devedor } from '../utils/pixProvider';
-
-// import { GerencianetProvider } from '../providers/gerencianet/gerencianetProvider';
-import { MercadoPagoProvider } from '../providers/mercadopago/mercadoPagoProvider';
-
-// const pixProvider: PixProvider = new GerencianetProvider();
-const pixProvider: PixProvider = new MercadoPagoProvider();
-
-export const gerarPagamento: APIGatewayProxyHandler = async (event) => {
+export const handler: APIGatewayProxyHandler = async (event) => {
   try {
     if (!event.body) {
       return {
@@ -20,9 +12,8 @@ export const gerarPagamento: APIGatewayProxyHandler = async (event) => {
       };
     }
 
-    const { valor, devedor }: { valor?: string; devedor?: Devedor } = JSON.parse(event.body);
+    const { valor, payer }: { valor?: string; payer?: Payer } = JSON.parse(event.body);
 
-    // Validações obrigatórias
     if (!valor) {
       return {
         statusCode: 400,
@@ -30,25 +21,28 @@ export const gerarPagamento: APIGatewayProxyHandler = async (event) => {
       };
     }
 
-    if (!devedor?.nome || !devedor?.cpf) {
+    if (!payer?.name || !payer?.cpf) {
       return {
         statusCode: 400,
         body: JSON.stringify({ erro: 'Dados do devedor (nome e cpf) obrigatórios' }),
       };
     }
 
-    // Geração do txid (UUID sem hífens, até 35 caracteres)
     const txid = uuidv4().replace(/-/g, '').substring(0, 35);
 
-    // Cria cobrança via provedor Pix
-    const cobranca = await pixProvider.criarCobranca(txid, valor, devedor);
+    const cobranca = await createPixPayment(txid, valor, payer);
+
+    // Inicia o monitoramento de pagamento de forma assíncrona
+    monitorPixPayment(txid).catch((err: any) =>
+      console.error(`Erro ao monitorar pagamento do Pix [${txid}]:`, err),
+    );
 
     return {
       statusCode: 200,
       body: JSON.stringify({
         txid,
         qrCode: cobranca.qrCode,
-        imagemQrcode: cobranca.imagemQrcode,
+        imagemQrcode: cobranca.imageQrcode,
       }),
     };
   } catch (error: any) {

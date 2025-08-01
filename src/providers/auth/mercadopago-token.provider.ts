@@ -1,6 +1,4 @@
-// providers/mercadoPagoTokenProvider.ts
-import { OAuthTokenProvider } from "../oauthTokenProvider";
-
+import { OAuthTokenProvider } from 'domain/types/oauth.types';
 import dotenv from 'dotenv';
 dotenv.config();
 

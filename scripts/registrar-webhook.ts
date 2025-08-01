@@ -1,38 +1,38 @@
-import dotenv from 'dotenv';
-dotenv.config();
+// import dotenv from 'dotenv';
+// dotenv.config();
 
-// import { GerencianetProvider } from '../src/providers/gerencianet/gerencianetProvider';
-import { MercadoPagoProvider } from '../src/providers/mercadopago/mercadoPagoProvider';
+// // import { GerencianetProvider } from '../src/providers/gerencianet/gerencianetProvider';
+// import { MercadoPagoProvider } from '../src/providers/mercadopago/mercadoPagoProvider';
 
-// Para trocar de provedor, basta importar outro que implemente PixProvider
-// import { OutroProvedorPix } from '../src/providers/outroProvedor';
+// // Para trocar de provedor, basta importar outro que implemente PixProvider
+// // import { OutroProvedorPix } from '../src/providers/outroProvedor';
 
-import { PixProvider } from '../src/utils/pixProvider';
+// import { PixProvider } from '../src/utils/pixProvider';
 
-// Instancia o provedor atual (aqui Gerencianet)
-// const pixProvider: PixProvider = new GerencianetProvider();
-const pixProvider: PixProvider = new MercadoPagoProvider();
+// // Instancia o provedor atual (aqui Gerencianet)
+// // const pixProvider: PixProvider = new GerencianetProvider();
+// const pixProvider: PixProvider = new MercadoPagoProvider();
 
-async function registrarWebhookPix() {
-  // Obtém a URL do webhook a partir do .env
-  const webhookUrl = process.env.WEBHOOK_URL;
+// async function registrarWebhookPix() {
+//   // Obtém a URL do webhook a partir do .env
+//   const webhookUrl = process.env.WEBHOOK_URL;
 
-  if (!webhookUrl) {
-    console.error('❌ WEBHOOK_URL não definido no arquivo .env');
-    process.exit(1);
-  }
+//   if (!webhookUrl) {
+//     console.error('❌ WEBHOOK_URL não definido no arquivo .env');
+//     process.exit(1);
+//   }
 
-  try {
-    // Chama o método do provider para registrar o webhook
-    await pixProvider.registrarWebhook(webhookUrl);
-    console.log('✅ Webhook Pix registrado com sucesso.');
-  } catch (error: any) {
-    console.error('❌ Erro ao registrar webhook Pix:');
-    // Caso axios retorne erro estruturado
-    console.error(error.response?.data || error.message);
-    process.exit(1);
-  }
-}
+//   try {
+//     // Chama o método do provider para registrar o webhook
+//     await pixProvider.registrarWebhook(webhookUrl);
+//     console.log('✅ Webhook Pix registrado com sucesso.');
+//   } catch (error: any) {
+//     console.error('❌ Erro ao registrar webhook Pix:');
+//     // Caso axios retorne erro estruturado
+//     console.error(error.response?.data || error.message);
+//     process.exit(1);
+//   }
+// }
 
-// Executa o registro do webhook assim que o script roda
-registrarWebhookPix();
+// // Executa o registro do webhook assim que o script roda
+// registrarWebhookPix();

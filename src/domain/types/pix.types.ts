@@ -1,28 +1,28 @@
-export interface Devedor {
+export interface Payer {
   email: string
-  nome: string;
+  name: string;
   cpf: string;
 }
 
-export interface CobrancaPixResult {
+export interface PixChargeResponse {
   txid: string;
   qrCode: string;
-  imagemQrcode: string;
+  imageQrcode: string;
 }
 
 export interface PixProvider {
   /**
    * Cria uma cobrança Pix com base no txid, valor e dados do devedor.
    */
-  criarCobranca(txid: string, valor: string, devedor: Devedor): Promise<CobrancaPixResult>;
+  create(txid: string, valor: string, payer: Payer): Promise<PixChargeResponse>;
 
   /**
    * Monitora uma cobrança Pix até ser paga (ou timeout).
    */
-  monitorarPagamento(txid: string): Promise<boolean>;
+  monitor(txid: string): Promise<boolean>;
 
   /**
    * Registra o webhook Pix (chamado pela instituição quando há mudança de status).
    */
-  registrarWebhook(webhookUrl: string): Promise<void>;
+  registerWebhook(webhookUrl: string): Promise<void>;
 }
